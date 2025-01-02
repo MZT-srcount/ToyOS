@@ -1,0 +1,16 @@
+#设置编译环境
+[build]
+target = "riscv64gc-unknown-none-elf"
+
+#设置链接脚本
+[target.riscv64gc-unknown-none-elf]
+rustflags = [
+	"-Clink-arg=-Tsrc/linker.ld","-Cforce-frame-pointers=yes"
+]
+
+#把软件包管理器 cargo 所用的软件包镜像地址 crates.io换成中国科学技术大学的镜像服务器来加速三方库的下载
+[source.crates-io]
+replace-with = 'tuna'
+
+[source.tuna]
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
