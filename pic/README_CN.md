@@ -48,20 +48,16 @@
     1）首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo：
         curl https://sh.rustup.rs -sSf | sh
         若网速较慢，可修改 rustup 的镜像地址来加速：
-        ```
             export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
             export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
             curl https://sh.rustup.rs -sSf | sh
-        ```
     
     2）安装完成后，重新开启终端使环境变量生效
     
     3）输入 rustc --version 确认是否正确安装Rust工具链，注意：只能使用rustc的nightly版本
         若已安装rustc且非nightly版本，可使用如下命令安装nightly版本
-        ```
             rustup install nightly
             rustup default nightly
-        ```
     
         ** ！！！注意：由于rustc的nightly的某些版本无法使用llvm-asm宏，建议使用1.59.0版本！** 
         ** ！！！注意：由于rustc的nightly的某些版本无法使用llvm-asm宏，建议使用1.59.0版本！** 
@@ -69,35 +65,30 @@
 
     4）若网速较慢，最好将软件包管理器 cargo 所用的软件包镜像地址 crates.io 也换成中国科学技术大学的镜像服务器来加速三方库的下载
         打开或新建~/.cargo/config 文件，修改内容为：
-        ```
             [source.crates-io]
             registry = "https://github.com/rust-lang/crates.io-index"
             replace-with = 'ustc'
             [source.ustc]
             registry = "git://mirrors.ustc.edu.cn/crates.io-index"
-        ```
-
+    
     5）安装rust相关软件包：
-    ```
         rustup target add riscv64gc-unknown-none-elf
         cargo install cargo-binutils --vers =0.3.3
         rustup component add llvm-tools-preview
         rustup component add rust-src
-    ```
+
 2、安装qemu模拟器：
 
     1）安装所需依赖包：
-    ```
         sudo apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
                       gawk build-essential bison flex texinfo gperf libtool patchutils bc \
                       zlib1g-dev libexpat-dev pkg-config  libglib2.0-dev libpixman-1-dev git tmux python3 python3-pip
-    ```
+
     2）编译安装并配置RISC-V支持：
-    ```
         cd qemu-5.0.0
         ./configure --target-list=riscv64-softmmu,riscv64-linux-user
         make -j$(nproc)
-    ```
+
     注意，上面的依赖包可能并不完全，比如在 Ubuntu 18.04 上：
         出现 ERROR: pkg-config binary 'pkg-config' not found 时，可以安装 pkg-config 包；
         出现 ERROR: glib-2.48 gthread-2.0 is required to compile QEMU 时，可以安装 libglib2.0-dev 包；
@@ -105,19 +96,16 @@
 
 3、编辑~/.bashrc文件，在文件末尾加入几行：
 
-```
     export PATH=$PATH:/home/shinbokuow/Downloads/built/qemu-5.0.0
     export PATH=$PATH:/home/shinbokuow/Downloads/built/qemu-5.0.0/riscv64-softmmu
     export PATH=$PATH:/home/shinbokuow/Downloads/built/qemu-5.0.0/riscv64-linux-user
-```
 
     然后调用命令：source ~/.bashrc 更新系统路径
 
 4、为了在k210真机运行内核，需要安装基于 Python 的串口通信库和简易的串口终端：
-```
+
     pip3 install pyserial
     sudo apt install python3-serial
-```
 
 
 
