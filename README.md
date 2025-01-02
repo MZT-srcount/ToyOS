@@ -1,15 +1,11 @@
-# Toyos
+# ToyOS
 
-## Introduce
-Based on the RISCV system architecture, the operating system kernel that can successfully run on the K210 development board``Toyos`` and provide some system calls that can be used. Up to now, TOYOS has achieved some key features of the operating system, supports basic functions such as multi -core process management, memory management, and file systems, and has implemented some system calls accordingly.
+## 介绍
+基于RISCV体系架构，可运行于k210开发板的操作系统内核``ToyOS``，并提供一些可供使用的系统调用。截至目前，ToyOS已实现操作系统的部分关键特性，支持多核进程管理、内存管理以及文件系统等基础功能，并相应实现了一些系统调用，在基于k210处理器的Sipeed M1开发板和qemu上能够成功运行。  
 
-> Warning: This page is translated by MACHINE, which may lead to POOR QUALITY or INCORRECT INFORMATION, please read with CAUTION!
+## 软件架构
 
-- [A Chinese Version](pic/README_CN.md)
-
-## Software architecture
-
-1. Directory tree:
+1、目录树：
 
 ```
 
@@ -45,230 +41,231 @@ Based on the RISCV system architecture, the operating system kernel that can suc
 |    |--Makefile
 
 ```
-## Installation tutorial
+## 安装教程
 
-1. RUST development environment configuration:
+1、Rust开发环境配置：
 
-  1) First install the Rust version manager Rustup and Rust package manager Cargo:
-    curl https://sh.rustup.rs -ssf|SH
-    If the network speed is slow, you can modify the mirror address of Rustup to accelerate:
-      export rustup_dist_server = https://mirrs.ustc.edu.cn/rust-Static
-      export rustup_update_root = https://mirrrs.ustc.edu.cn/rust-stative/rustup
-      curl https://sh.rustup.rs -ssf|SH
+    1）首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo：
+        curl https://sh.rustup.rs -sSf | sh
+        若网速较慢，可修改 rustup 的镜像地址来加速：
+            export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+            export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
+            curl https://sh.rustup.rs -sSf | sh
     
-  2) After the installation is completed, re -open the terminal to make the environment variable take effect
-      
-  3) Enter Rustc -Version to confirm whether to install the Rust tool chain correctly. Note: You can only use Rustc's Nightly version
-    If Rustc has been installed and non -Nightly version, you can use the following command to install the Nightly version
-      Rustup Install Nightly
-      Rustup Default Nightly
+    2）安装完成后，重新开启终端使环境变量生效
     
-  **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
-  **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
-  **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
-
-  4) If the network speed is relatively slow, it is best to replace the software packaging mirror image address of the software package manager Cargo.
-    Open or build a new ~/.cargo/config file, and modify the content:
-    [Source.crates-IO]
-    Registry ="https://github.com/rust-lang/crates.io-index" 
-    replace-all = 'USSTC'
-    [Source.ustc]
-    Registry ="git://mirrors.ustc.edu.cn/crates.io-index" 
+    3）输入 rustc --version 确认是否正确安装Rust工具链，注意：只能使用rustc的nightly版本
+        若已安装rustc且非nightly版本，可使用如下命令安装nightly版本
+            rustup install nightly
+            rustup default nightly
     
-  5) Install RUST related software packages:
-    Rustup Target Add Riscv64GC-UNKNOWN-NONE-In
-    Cargo Install Cargo-Binutils-Vers = 0.3.3
-    Rustup Component Add LLVM-Tools-Preview
-    Rustup Component Add Rust-SRC
+        ** ！！！注意：由于rustc的nightly的某些版本无法使用llvm-asm宏，建议使用1.59.0版本！** 
+        ** ！！！注意：由于rustc的nightly的某些版本无法使用llvm-asm宏，建议使用1.59.0版本！** 
+        ** ！！！注意：由于rustc的nightly的某些版本无法使用llvm-asm宏，建议使用1.59.0版本！** 
 
-2. Install the QEMU simulator:
+    4）若网速较慢，最好将软件包管理器 cargo 所用的软件包镜像地址 crates.io 也换成中国科学技术大学的镜像服务器来加速三方库的下载
+        打开或新建~/.cargo/config 文件，修改内容为：
+            [source.crates-io]
+            registry = "https://github.com/rust-lang/crates.io-index"
+            replace-with = 'ustc'
+            [source.ustc]
+            registry = "git://mirrors.ustc.edu.cn/crates.io-index"
+    
+    5）安装rust相关软件包：
+        rustup target add riscv64gc-unknown-none-elf
+        cargo install cargo-binutils --vers =0.3.3
+        rustup component add llvm-tools-preview
+        rustup component add rust-src
 
-  1) The dependent package required for installation:
-    SUDO APT Install AutoConf Automake AutoTools-Dev Curl Libmpc-DEV Libmpr-DEV Libgmp-DEV \ \ \
-    GAWK Build-ESSENTIAL BISON FLEX TEXINFO GPERF LIBTOOL PATCHUTILS BC \
-    zlib1g-dev libexpat-dev PKG-config libglib2.0-dev libpixman-dev git Tmux Python3-PIP
+2、安装qemu模拟器：
 
-  2) Compile and install and configure RISC-V support:
-    CD QEMU-5.0.0
-    ./configure-Target-List = RISCV64-SOFTMMU, RISCV64-LINUX-User
-    Make -J $ (NPROC)
+    1）安装所需依赖包：
+        sudo apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
+                      gawk build-essential bison flex texinfo gperf libtool patchutils bc \
+                      zlib1g-dev libexpat-dev pkg-config  libglib2.0-dev libpixman-1-dev git tmux python3 python3-pip
 
-  Note that the above dependency package may not be complete, such as on Ubuntu 18.04:
-  When error: pkg-config binary 'pkg-config' not found, you can install the PKG-config package;
-  When error: Glib-2.48 Gthread-2.0 is required to compile qemu, you can install the libglib2.0-dev package;
-  When Error: pixman> = 0.21.8 not present, you can install libpixman-dev package
+    2）编译安装并配置RISC-V支持：
+        cd qemu-5.0.0
+        ./configure --target-list=riscv64-softmmu,riscv64-linux-user
+        make -j$(nproc)
 
-3. Edit ~/.bashrc file, add a few lines to the end of the file:
+    注意，上面的依赖包可能并不完全，比如在 Ubuntu 18.04 上：
+        出现 ERROR: pkg-config binary 'pkg-config' not found 时，可以安装 pkg-config 包；
+        出现 ERROR: glib-2.48 gthread-2.0 is required to compile QEMU 时，可以安装 libglib2.0-dev 包；
+        出现 ERROR: pixman >= 0.21.8 not present 时，可以安装 libpixman-1-dev 包
 
-  export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0
-  export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0/riscv64-sOFTMMMU
-  export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0/riscv64-linux- userr
+3、编辑~/.bashrc文件，在文件末尾加入几行：
 
-  Then call the command: source ~/.bashrc to update the system path
+    export PATH=$PATH:/home/shinbokuow/Downloads/built/qemu-5.0.0
+    export PATH=$PATH:/home/shinbokuow/Downloads/built/qemu-5.0.0/riscv64-softmmu
+    export PATH=$PATH:/home/shinbokuow/Downloads/built/qemu-5.0.0/riscv64-linux-user
 
-4. In order to run the kernel in the K210 real machine, you need to install the Python -based serial communication library and simple serial port terminal:
+    然后调用命令：source ~/.bashrc 更新系统路径
 
-  PIP3 Install pyserial
-  SUDO APT Install Python3-Serial
+4、为了在k210真机运行内核，需要安装基于 Python 的串口通信库和简易的串口终端：
 
-## Instruction
+    pip3 install pyserial
+    sudo apt install python3-serial
 
-1. Run Toyos:
 
-  Enter the Toyos directory in the terminal, enter the instruction Make Run running code
 
-2. There are currently four parts::
+## 使用说明
 
-  1) Bootloader: guide program, use Rustbin
+1. 运行ToyOS:
 
-  2) Toyos: kernel part
-  The kernel code within SRC, see the code in the code for details
+    在终端进入ToyOS目录，输入指令 make run 运行代码
 
-  3) User: User testing program, temporarily use this file to test the program before the file system is implemented
-  The related code in SRC, including link files and related test programs, is a test program in SRC/BIN
+2. 目前共包含四个部分:
 
-  4) Tools: including file system burning and other tools
+    1）bootloader：引导程序，采用RustBin
 
-3. Open interface to declare or annotation in the MOD.RS file in the kernel folders
+    2）toyos：内核部分
+        src内的为内核代码，详情见代码内注释
 
-# System design
+    3）user：用户测试程序，未实现文件系统前暂时用该文件来测试程序
+        src内的为相关代码，包含链接文件和相关的测试程序，src/bin内为测试程序
 
-## System overall architecture design
+    4）tools：包含文件系统烧录等工具
 
- ![XX](pic/framework.png) 
+3. 对外开放的接口在内核各个文件夹中的mod.rs文件中声明或注释
 
-TOYOS follows the idea of ​​modular design, and divides the construction of the operating system based on the privilege level of the RISC-V structure into three levels: the machine layer, the operating system layer, and the user layer. The corresponding program execution permissions are also distributed from high to low.
-- The user layer runs in the user mode and is located in the virtual address space. It interacts with the kernel through the system calling interface; when the user needs to perform system calls, it needs to be caught through the core through ECALL. In order to facilitate the interaction between users and the kernel, system calls are often packed and partially prepared on the user layer to form a user standard library LIB. For different languages, you can have different standard libraries.
-- The operating system layer is running in the regulator mode, which is also located in the virtual address space. The physical memory is managed by a constant mapping method. Can manage some special registers. The dual -core design was adopted in the Toyos, which encapsulated the two cores. The two cores run different processes at the same time, but interact with the same kernel and run the same memory management, process management, and file system management.
-    -Memory management is mainly responsible for managing the mapping relationship between the virtual address space of the user and the physical memory space, including the allocation and recycling of physical pages, the conversion of the virtual and real page, and the allocation of stacks.
-    - 进程模块负责进程的资源管理,对进程进行调度等.
-    - 文件系统采用FAT32结构,主要对磁盘进行读取和修改,并将读取的数据抽象化为文件,方便内核管理. 
+# 系统设计
+
+## 系统整体架构设计  
+
+![xx](pic/framework.png)  
+
+ToyOS遵循模块化设计的思想，将操作系统的构建根据RISC-V架构的特权级分为了三个层级：机器层, 操作系统层以及用户层。对应的程序执行权限也从高到低分布。
+- 用户层运行于用户模式，位于虚拟地址空间，通过系统调用接口与内核进行交互；当用户需要进行系统调用时，需要通过ecall陷入内核。为了方便用户与内核的交互，在用户层往往还会对系统调用进行进一步的封装和部分预处理，形成用户标准库Lib。对于不同的语言，可以拥有不同的标准库。
+- 操作系统层运行于监管者模式，同样位于虚拟地址空间，通过采用恒等映射的方式对物理内存进行管理。能够管理部分特殊寄存器。在ToyOS中采用了双核设计，对两个核心进行了封装。两个核心在同一时刻分别运行不同的进程，但与同一个内核进行交互，运行同样的内存管理、进程管理以及文件系统管理。
+    - 内存管理主要负责管理用户的虚拟地址空间与物理内存空间的映射关系，包括物理页的分配与回收、虚实页面转换、堆栈的分配等。
+    - 进程模块负责进程的资源管理，对进程进行调度等。
+    - 文件系统采用FAT32结构，主要对磁盘进行读取和修改，并将读取的数据抽象化为文件，方便内核管理。 
     
     
   
-As the middle layer, the core needs to provide user service abstraction to the user layer, and provide the upper layer to provide a system call interface through the interrupt service mechanism; to meet the standard of the machine layer downward, interact with the hardware through the SBI packaging interface.
-- The SBI runs in the machine mode and the packaging hardware function, providing an abstract interface for the operating system layer, so that the operating system can not need to care too much about the details of the hardware. It has better compatibility and logic.
+  内核作为中间层，向上需要给用户层提供用户服务抽象，通过中断服务机制给上层提供系统调用接口；向下满足机器层的标准，通过SBI封装的接口与硬件交互。  
+- SBI运行于机器模式，封装硬件功能，为操作系统层提供一个抽象化的接口，使得操作系统可以无需过多关心硬件的细节部分，具有更好的兼容性和逻辑性。
 
-## System framework
-- Process module
-  - 进程号的分配与回收,进程号决定内核栈的位置
+## 系统框架
+- 进程模块
+  - 进程号的分配与回收，进程号决定内核栈的位置
   - 处理器核心的上下文管理
   - 进程上下文管理
   - 进程资源管理
   - 进程调度管理
-- Memory module
+- 内存模块
   - 内核的动态内存分配
-  - 内存管理器,负责管理进程的虚拟地址空间
-  - 页表机制实现,包括虚实地址转换,页表项读取,映射以及权限控制等功能. 
-  - 物理页帧管理,负责页帧的分配与回收
-  - 用于多线程时的内核栈分配,目前暂未使用
-- File system module
-  -Disk block cache implementation
+  - 内存管理器，负责管理进程的虚拟地址空间
+  - 页表机制实现，包括虚实地址转换、页表项读取、映射以及权限控制等功能。 
+  - 物理页帧管理，负责页帧的分配与回收
+  - 用于多线程时的内核栈分配，目前暂未使用
+- 文件系统模块
+  - 磁盘块缓存实现
   - IO设备管理
-  - FAT32磁盘数据结构组织,封装和操作
+  - FAT32磁盘数据结构组织、封装和操作
   - 文件系统管理
   - 内核抽象文件系统的实现与管理
   - 并发访问与控制
 
-# Sub -module design
-## Process management
+# 子模块设计
+## 进程管理
 
-In the process management section, it is necessary to consider the creation and initialization of the process, the parent -child relationship of the process, the switching of the process, the distribution and recycling of process resources. A process urgently needs to consider the implementation of user space, and also needs to be implemented in the core space, which also increases the complexity of its realization. In our design process, a tree structure can be formed between all processes. The root node of the tree is an initial process, and the remaining processes are created on the basis of it. For process management, how to effectively maintain the process tree. In order to achieve a good abstraction and management of the process tree, we divided it into three modules, namely the process control module, the process scheduling module, and the process switching module.
+​		在进程管理部分，需要考虑进程的创建与初始化，维护进程的父子关系，进程的切换，进程资源的分配与回收等问题。一个进程急需要考虑在用户空间上的执行，也需要考虑在内核空间的执行，这也增加了其实现的复杂性。在我们的设计过程中，所有进程之间可以形成一个树结构，树的根节点为一个初始进程,其余进程均在其基础上进行创建。对于进程的管理，其实质上是如何有效维护该进程树。为了实现一个良好的抽象和对进程树的管理，我们将其分成了三个模块，分别是进程控制模块，进程调度模块，进程切换模块。
 
 
-### Call relationship
+### 调用关系
 
-The execution process of one process can be divided into two parts, one is executed in the user space, and the other part is executed in the kernel space. Feeling that I am continuously executed and occupy all system resources and time. In our implementation, the calling relationship of the process execution is as shown below:
+​		一个进程的执行过程可以分为两个部分，一部分是在用户空间中执行，另一部分时在内核空间中执行，后者对于前者是透明的，分时多任务系统中，可以让每一个进行感觉自己在连续执行，占用所有的系统资源和时间。在我们的实现中，进程执行的调用关系如下图：
 
- ![](pic/P_CallRelation.png) 
+![](pic/P_CallRelation.png)
 
-Each execution application will be divided into different task blocks in the kernel space. When all the task blocks of an application are executed, the application is completed. At the same time Information. The task blocks in different applications are managed by a unified process manager. It is determined that which task block should be performed at different times. When a task block is executed or exited due to abnormality, it will also be assigned to the next one The task block is performed.
+​		每一个执行的应用程序，在内核空间会被分成不同的任务块，当一个应用的所有任务块被执行完毕，该应用程序方算执行完毕，同时这些任务块会在PCB控制块中存储自身的信息。不同的应用程序中的任务块由统一的进程管理器进行管理，由其确定在不同时刻应该由哪一个任务块进行执行，当一个任务块执行完毕或者由于异常退出时，也会分配给下一个任务块进行执行。
 
-### Module description
+### 模块说明
 
-- **Process control module** 
+- **进程控制模块**  
 
-The main function is to maintain the information of this process to control the process. It is the core module for process management. This information includes process identification, process status, address space information, and father -son processes. This information represents the core attributes in a process. When the state of the process changes, the corresponding is to maintain the control attribute content of the corresponding process. Implementation of the attributes.
+主要功能是维护该进程的信息以便对进程进行控制，是用于进程管理的核心模块。这些信息包括进程标识，进程状态，地址空间信息，以及父子进程等。这些信息代表着一个进程中的核心属性，当进程的状态发生改变，相应的便是维护对应进程的控制属性内容，因此要保证不同的进程之间在满足区分的条件之下，又能通过以上的属性进行功能的实现。
 
-- **Process scheduling module** 
+- **进程调度模块**  
 
-It is to manage all the processes currently in the process queue with a certain scheduling strategy. The tools used for management can be called a scheduling, and the main function provided is to take a task from the queue and add a new task. Among them, a set of process queues in memory can be maintained. When a new process is created, the attribute information of the new process should be added to the queue. If the process is over or abnormally exit, it should cause the content in the process to delete from the queue. But when other tasks are involved, the task should always be in the queue.
+​		就是以某一种调度策略对当前在进程队列中的全部进程进行管理。用于管理的工具可称之为调度器，其主要的提供的功能便是从队列中取出一个任务以及添加一个新任务。其中可以维护内存中的一组进程队列。当有新的进程被创建，则应该往队列中添加新进程的属性信息，如果进程结束，或者异常退出，则应该会导致该进程中的内容，从队列中删除。但当其他涉及任务调度时，则任务应该始终在队列中。
 
-- **Process switching module** 
+- **进程切换模块**  
 
-Used to save the control block information of the current execution process, and the task of control flow. Its main function is to obtain the information of the current execution process and switch different processes according to the scheduling result. Its core effect can be used to obtain the processing process being performed by the processor, and when the task is switched, it can also switch between the process through the context of the current process control flow. Therefore, it will be closely related to the process scheduling module. When the process is scheduled, it means that the process should be switched, so the distribution of the process controller and the switching of different contexts.
+​	用于保存当前执行进程的控制块信息，以及控制流的任务上下文。其主要功能是可以获取当前执行进程的信息以及根据调度结果切换不同的进程。其核心作用可以用于获取当前正在被处理器执行的进程，而当任务被切换，也可通过当前进程控制流的上下文进行进程的切换。因此会与进程调度模块密切相关，当有进程被调度时，代表着应该进行进程的切换，因此需要进程控制器的分配和不同上下文的切换。
 
-## Memory management
-Memory management mainly includes three parts: kernel space management, user space management, and page address conversion. The management of memory space is completed in the kernel virtual address space. The kernel space is managed by mapping the physical address space by pages such as pages as the unit, and the physical address space is managed. The user space and kernel space are all completed in the kernel space in the distribution of physical memory and the conversion of the page table address. At the same time, in the kernel space, it is also responsible for managing the page frame allocation and recycling of the user and the kernel on the pages of the physical memory, the page table mapping of the virtual address to the physical address, the distribution of the user stack, the file and device mapping, and the dynamic memory allocation during program operation. 
+## 内存管理
+内存管理主要包括内核空间管理、用户空间管理以及页表地址转换三部分，内存空间的管理在内核虚拟地址空间完成。内核空间通过以页为单位恒等映射物理地址空间，对物理地址空间进行管理，用户空间和内核空间在物理内存的分配以及页表地址的转换均在内核空间完成。同时在内核空间还负责管理用户和内核在物理内存的页帧分配与回收、虚拟地址到物理地址的页表映射、用户栈的分配、文件和设备映射以及程序运行中的动态内存分配等。
+当前内核地址空间和用户地址空间的布局情况以及它们与物理地址的映射关系如下图所示：  
 
-The layout of the current kernel address space and the user address space and the mapping relationship between them and the physical address are shown in the figure below:
+![](pic/space%20layout1.png)  
 
- ![](pic/space%20layout1.png) 
-
-The kernel address space is combined with constant mapping and random mapping.`0x8000000~0x80800000` the address section adopts constant mapping to make the kernel constant memory, while facilitating the management of physical memory.`MMIO` some also use Hengfu mapping. exist `0x80800000` the above addresses are randomly mapped, which are mainly used for the distribution of the kernel stack of the springboard page and the kernel stack of each process. The pile space of the kernel is divided into the .BSS segment as an undeelled global variable. The user address space adopts random mapping.
+内核地址空间采用恒等映射和随机映射相结合的方式，在`0x8000000~0x80800000`地址段采用恒等映射，使内核常驻内存，同时方便对物理内存的管理，`MMIO`部分同样采用恒等映射。在`0x80800000`以上地址采用随机映射，主要用于跳板页面以及每个进程的内核栈的分配。内核的堆空间作为未初始化的全局变量划分在.bss段中。用户地址空间采用随机映射的方式。
   
-### Overview of the module:
-- **Memory module** 
+### 模块概述：
+- **内存管理器模块**  
    
-The address space is a series of unrealized logical segments. This association generally refers to the virtual memory space composed of these logic segments binds with a running program, that is, the direct access range of the code and data of this operation program to the code and data Limit in the virtual address space of its associated, each process has its own memory space. The memory manager is mainly responsible for managing the entire virtual address space of each process. Including the management of the segment of the address space, the page management, etc.
+地址空间是一系列有关联的不一定连续的逻辑段，这种关联一般是指这些逻辑段组成的虚拟内存空间与一个运行的程序绑定，即这个运行的程序对代码和数据的直接访问范围限制在它关联的虚拟地址空间之内，每个进程都有自己的内存空间。内存管理器主要便负责管理每个进程的整个虚拟地址空间。包括对地址空间的段的管理、页表管理等。  
   
-- **Multi -level page table management module** 
+- **多级页表管理模块**  
   
-The SV39 multi -level page table is managed by nodes. Each node is just stored in a physical page frame, and its position can be represented by a physical page number. Each application corresponds to a different multi -level page table. The page watch manager is mainly responsible for the mapping of the multi -level page table, the management of the page table item, and the search of the page.
+SV39 多级页表以节点为单位进行管理。每个节点恰好存储在一个物理页帧中，它的位置可以用一个物理页号来表示。每个应用都对应一个不同的多级页表。页表管理器主要负责管理进程多级页表的映射、页表项的管理以及页面的查找等。  
   
-- **Logic segment management module** 
+- **逻辑段管理模块**  
   
-We describe a virtual memory of a continuous address in the logic segment. A memory manager contains several space managers. The space manager is mainly responsible for the mapping of the page, the data management in the section, the mapping method of the segment, and the virtual address range of the segment.
+我们用逻辑段为单位描述一段连续地址的虚拟内存。一个内存管理器中包含数个段空间管理器。段空间管理器主要负责段内页面的映射、段内数据管理、段的映射方式以及段的虚拟地址范围确认和修改等。  
   
-- **Physical page frame management module** 
+- **物理页帧管理模块**  
   
-When Bootloader loads the kernel into a physical memory, some of the physical memory is already used to place the code and data of the kernel. We need to manage the remaining idle memory based on a single physical page frame. When we need to store the application data or the multi -level page table of the expansion application, it will allocate the idle physical page frames, and recover the application possession when applying an error or exit. All physical page frames.
+当bootloader把内核加载到物理内存中后，物理内存上已经有一部分用于放置内核的代码和数据。我们需要将剩下的空闲内存以单个物理页帧为单位管理起来，当需要存放应用数据或扩展应用的多级页表时分配空闲的物理页帧，并在应用出错或退出的时候回收应用占有的所有物理页帧。  
     
-- **Memory dynamic allocation module** 
+- **内存动态分配模块**  
   
-We divided a section of space for the dynamic memory distribution of the kernel in the kernel's .BSS paragraph. After initialization of the heap through the dynamic settings of the size of the heap, the processing of the pile of the wrong time, we could use the Alloc library to manage the heap space.
+我们在内核的.bss段划分了一段空间用于内核的动态内存分配，通过堆大小的设置、堆分配出错时的处理等对堆进行初始化后，便可利用alloc库对堆空间进行管理  
    
    
-The maximum physical memory in the K210 platform is 8MB, which means that it is easy to cause insufficient memory under high load. In response to this, we have imagined several ways to prevent physical memory inadequate:
+K210平台中物理内存最大为8MB，这意味着在高负荷的情况下很容易出现内存不足的情况。针对这点，我们设想了几种方式预防物理内存不足的问题：
 
-- use `Copy On Write` copy mechanism; under normal circumstances, pass `fork` most of the pages of the subsequent subsequent pages do not need to be modified in the subsequent procedures. Page frame sharing can be used well. Consumption and right `CPU cache` destruction.
+- 采用`Copy On Write`写时复制机制；一般情况下，通过`fork`形成的子进程在后续的程序运行中大部分页面并不需要修改，采用页帧共享，延时机制能很好的节省本就紧缺的内存资源，同时也减少了内存访问所带来的CPU周期的消耗以及对`CPU cache`的破坏。
   
-- Use the page to replace the replacement mechanism;`Copy On Write` it has a good effect on some cases such as a mode of multiple processes in a program. However, if there are too many programs running at the same time, the program is too large, and copying when writing is not good. We can set up a buffer file in the external memory to store the page that stores the program and save the virtual address and other information of each page, and then adjust the memory when needed.
+- 采用页面换入换出机制；`Copy On Write`对于某些情况下如一个程序多个进程的模式等有很好的效果，但如果同时运行的程序过多，程序过大，写时复制并不能很好的发挥效果。我们可以在外存中设置一个缓冲文件，专门用于存储程序的换出页面并保存每个换出页面的虚拟地址等信息，需要时再调入内存。
   
-- use `Lazy Alloc` mechanism; the stack space required for each process is not the same. Setting the space in advance can easily cause waste of space or insufficient space, and completely allows user programs to decide how much stack space is allocated. risk. Through the user's preset size, the mechanism that the kernel is allocated in time can solve these problems well.
+- 采用`Lazy Alloc`机制；每一个进程所需的堆栈空间并不相同，提前设定空间大小容易造成空间浪费或空间不足的情况，而完全让用户程序来决定分配多少堆栈空间又有内存虚占甚至是恶意攻击的风险。通过用户预设大小，内核实时分配的机制能够很好的解决这些问题。  
 
-In response to the problems that may be occupied by possible in the later period, we have imagined several solutions:
+针对后期可能的内存占用过大的问题，我们设想了几种解决方案：  
 
-- The program loading mechanism; when the memory occupies too much, the physical page frame is too small, which may cause problems that cannot be loaded to the memory. In order to allow the program to run The mechanism calls the exterior page to complete the completion of the remaining page. This mechanism can run more procedures in memory at the same time, but it is easy to cause problems such as stuttering.
+- 程序部分加载机制；在内存占用过大时，物理页帧过少，可能造成无法加载新程序到内存中的问题，为了让程序能够运行，可以只预先加载部分页面到内存中，通过缺页中断机制调用外存页面完成剩余页面的补全。这种机制可以在内存中同时运行更多程序，但容易造成卡顿等问题。  
   
-- The program is replaced by the mechanism; when the memory pressure is too large, in order to load new programs in time, you can consider marking the process in certain memory and replace it into the memory, put it in the external cache, and then replace the memory pressure in the memory and then return it back to the memory before the memory is replaced back to the memory. middle.
+- 程序换出机制；在内存压力过大时，为了及时加载新的程序，可以考虑标记某些内存中的进程并将其换出内存，放入外部缓存中，在内存压力减小时再换回内存中。
 
-Due to the limited time, we have only realized it at present `Copy on Write` pile space `Lazy Alloc` mechanism.
+由于时间有限，目前我们只实现了`Copy on Write`和堆空间的`Lazy Alloc`机制。
 
-## File system
-Based on the RCore-Tutorial-Book-V3 tutorial, the loosening combined module design ideas, we realize a FAT32 file system. This development process is easier to understand and has better expansion. On the one hand, we use the abstract interface BlockDevice to connect to the underlying device driver to avoid binding with the device driver. On the other hand, through the AllocCrate provided by Rust, the memory management of the kernel of the operating system isolates function. In order to avoid access to the relevant kernel function of interruption of peripheral interruptions, the underlying driver uses the method of rotation to access the virtual disk device. Therefore, our disk file system is separated from the kernel virtual file system. In addition, in our file system, any system object with reading and writing functions is regarded as abstract files. We also made corresponding designs for concurrent access to meet the needs of dual -core systems.
-### The overall structure of the file system
-The file system uses hierarchical and modular structural design. The disk file system is mainly divided into disk block equipment interface layers, block cache layers, disk data structure layers, file system management, and virtual file system layer.
-|Level|describe|
+## 文件系统
+基于 rCore-Tutorial-Book-v3 教程的松耦合模块化设计思路，我们实现了一个FAT32文件系统，这样的开发过程更易于理解，且具有更好的可拓展性。一方面我们采用抽象接口BlockDevice与底层设备驱动进行连接，避免了与设备驱动的绑定，另一方面通过Rust提供的alloccrate对操作系统内核的内存管理进行了隔离，避免了直接调用内存管理的内核函数。为了避免访问外设中断的相关内核函数，在底层驱动上又采用了轮询的方式来访问虚拟磁盘设备。因此，我们的磁盘文件系统与内核虚拟文件系统分隔开的。除此之外，在我们的文件系统中，任何具备读写功能的系统对象都被视为抽象的文件，对并发访问我们也做了相应的设计从而满足双核系统的需求。
+### 文件系统整体结构 
+文件系统采用了层次化和模块化的结构设计，磁盘文件系统从下到上主要分为磁盘块设备接口层、块缓存层、磁盘数据结构层、文件系统管理层、虚拟文件系统层。
+|层级	| 描述 |
 | ---- | ---- |
-|Disk block device interface layer|The abstract interface BlockDevice of a block device is declared to achieve two abstract methods Read_block and Write_block. These two methods are provided by the actual user of the file system.|
-|Block cache layer|Provide a get_block_cache interface to visit the block, which will automatically read, write back or replace the block according to the requirements.|
-|Disk data structure layer|The core data structures such as guidance sectors, extended guidance sectors, file system information sectors, and length directory items, as well as abstract FAT.|
-|File system management|A kind of abstraction for disk layout. You can open the existing FAT32 file system to control the allocation and recycling of clusters.|
-|Virtual file system layer|Provide the interface of file operation for the kernel, such as the creation, reading, writing, and clearing up to support related system calls.|
+| 磁盘块设备接口层 |	声明了一个块设备的抽象接口 BlockDevice，实现两个抽象方法read_block和write_block，这两个方法由文件系统的实际使用者提供。|
+| 块缓存层 | 提供一个get_block_cache接口来访问块，会根据需求自动读取、写回或替换块。|
+| 磁盘数据结构层 |	实现了引导扇区，扩展引导扇区，文件系统信息扇区和长短目录项等核心数据结构，以及抽象的FAT。 |
+| 文件系统管理层 |	对磁盘布局的一种抽象。可以打开已有的FAT32文件系统，控制簇的分配与回收。 |
+| 虚拟文件系统层 |	为内核提供了文件操作的接口，比如文件的创建、读写、清空来向上支持相关的系统调用。 |
 
-### Introduction to each level of file system
-#### Disk block device interface layer
-In order to run on the virtual machine and development board, the file system must support different block equipment. The block device interface layer is used to docking with different block devices. At the same time, the difference between the different block equipment is shielded for the file system. It defines a Trait interface with the size of the disk device with the size of the block.
-#### Block cache layer
-The reading and writing of I/O devices is the key to affecting the performance of the file system. In order to improve performance, the design cache is needed to reduce the number of reads and writing I/O equipment. In addition, in order to avoid decreased efficiency to avoid different types of block data coverage, we designed a double -road cache to store file data and retrieval information respectively. Another advantage of using a disk cache is that it can shield the specific reading and writing details to improve efficiency. In our design, the upper module can directly request the required blocks to the cache, and the specific reading and writing and replacement process will be completed by the cache.
-#### Disk data structure layer
-This layer really begins to organize the file system. FAT32 has many important disk data structures, such as guidance sectors, extended guidance sectors, file system information sectors, FAT directory items, etc. They consist of different fields, the information of the storage file system, and some fields also have specific values. The work of the disk layout layer is to organize these data structures and provide convenient interfaces for the upper layers to obtain or modify information.
-#### File system management
-The file system manager layer is the core of the entire file system. It is responsible for the startup of the file system, the organization of the overall structure, the maintenance of important information, the distribution and recycling of clusters, and some practical computing tools. This layer provides other modules with a practical interface of FAT32, and other modules have any relevant calculations or processing work.
-#### Disk virtual file system layer
-The virtual file system layer is mainly responsible for providing interfaces for the kernel. The internal details of the file system are the first task to achieve complex functions. In this layer, we define the virtual file structure to describe the file, which has a corresponding relationship with the short directory item, and is used as the entrance to the access file. This layer implements common functions of file systems, such as creating, reading, writing, searching, deleting.
-#### Kernel virtual file system
-All types of files have been coordinated, and different readable objects are abstracted from unified interfaces, which are mainly called system -oriented calls. Through these interfaces, the relevant system calls can be implemented according to the consistent programming mode, which can not only improve the code reuse rate, but also have a strong scalability.
-#### Equipment management
-In the operating system, the management of I/O equipment is everywhere, and the existence of various I/O devices only makes the computer's powerful function. Equipment management is a bridge between kernel and device drive. The efficient management of various I/O devices is a test of an excellent computer system operating system. For kernel, it needs to provide interfaces to obtain control information from users; for drivers, they need to provide interfaces for kernel control and scheduling. At present, our system only supports SD Card equipment.
+### 文件系统各层级介绍
+#### 磁盘块设备接口层
+为了在虚拟机和开发板上运行，文件系统必须支持不同的块设备。块设备接口层即用于与不同的块设备对接，同时为文件系统屏蔽不同块设备的差异性，定义了一个以块大小为单位对磁盘块设备进行读写的trait接口。
+#### 块缓存层 
+I/O设备的读写是影响文件系统性能的关键。为了提升性能，需要利用局部性原理设计缓存以减小I/O设备读写次数。此外，为了避免不同类型的块数据覆盖而造成效率下降，我们设计了双路缓存，分别存储文件数据和检索信息。使用磁盘缓存的另一个好处是可以屏蔽具体的块读写细节，以此提升效率。在我们的设计中，上层模块可以直接向缓存索取需要的块，具体的读写、替换过程交由缓存完成。
+#### 磁盘数据结构层 
+本层真正开始对文件系统进行组织。FAT32有许多重要的磁盘数据结构，例如引导扇区、扩展引导扇区、文件系统信息扇区、FAT目录项等。他们由不同的字段构成，存储文件系统的信息，部分字段也存在特定的取值。磁盘布局层的工作就是组织这些数据结构，并为上层提供便捷的接口以获取或修改信息。
+#### 文件系统管理层 
+文件系统管理器层是整个文件系统的核心，其负责文件系统的启动、整体结构的组织、重要信息的维护、簇的分配与回收，以及一些的实用的计算工具。该层为其他模块提供了FAT32相关的实用接口，其他模块如有任何相关的计算或者处理工作。
+#### 磁盘虚拟文件系统层 
+虚拟文件系统层主要负责为内核提供接口，屏蔽文件系统的内部细节，首要任务就是实现复杂的功能。在该层中，我们定义了虚拟文件结构体以对文件进行描述，其与短目录项成对应关系，共同作为访问文件的入口。该层实现了文件系统常见的功能，例如创建、读写、查找、删除等。
+#### 内核虚拟文件系统 
+统筹了所有类型的文件，把不同可读写对象抽象出了统一的接口，主要面向系统调用。通过这些接口，相关系统调用可以按一致的编程模式实现，既能提高代码复用率，又具备很强的可扩展性。 
+#### 设备管理
+在操作系统中，I/O设备管理无处不在，由于各种I/O设备的存在才使得计算机的强大功能。设备管理是内核与设备驱动之间的桥梁，各种I/O设备的高效管理是对一个优秀计算机系统操作系统的考验。对于内核，其需要提供接口使得驱动获取来自用户的控制信息；对于驱动，其需要提供接口以便内核控制和调度。目前来讲，我们的系统仅支持SD Card块设备。
