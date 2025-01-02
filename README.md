@@ -1,13 +1,13 @@
 # Toyos
 
-#### Introduce
+## Introduce
 Based on the RISCV system architecture, the operating system kernel that can successfully run on the K210 development board``Toyos`` and provide some system calls that can be used. Up to now, TOYOS has achieved some key features of the operating system, supports basic functions such as multi -core process management, memory management, and file systems, and has implemented some system calls accordingly.
 
 > Warning: This page is translated by MACHINE, which may lead to POOR QUALITY or INCORRECT INFORMATION, please read with CAUTION!
 
 - [A Chinese Version](pic/README_CN.md)
 
-#### Software architecture
+## Software architecture
 
 1. Directory tree:
 
@@ -45,7 +45,7 @@ Based on the RISCV system architecture, the operating system kernel that can suc
 |    |--Makefile
 
 ```
-#### Installation tutorial
+## Installation tutorial
 
 1. RUST development environment configuration:
 
@@ -113,7 +113,7 @@ SUDO APT Install Python3-Serial
 
 
 
-#### Instruction
+## Instruction
 
 1. Run Toyos:
 
