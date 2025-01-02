@@ -49,87 +49,85 @@ Based on the RISCV system architecture, the operating system kernel that can suc
 
 1. RUST development environment configuration:
 
-1) First install the Rust version manager Rustup and Rust package manager Cargo:
-curl https://sh.rustup.rs -ssf|SH
-If the network speed is slow, you can modify the mirror address of Rustup to accelerate:
-export rustup_dist_server = https://mirrs.ustc.edu.cn/rust-Static
-export rustup_update_root = https://mirrrs.ustc.edu.cn/rust-stative/rustup
-curl https://sh.rustup.rs -ssf|SH
+  1) First install the Rust version manager Rustup and Rust package manager Cargo:
+    curl https://sh.rustup.rs -ssf|SH
+    If the network speed is slow, you can modify the mirror address of Rustup to accelerate:
+      export rustup_dist_server = https://mirrs.ustc.edu.cn/rust-Static
+      export rustup_update_root = https://mirrrs.ustc.edu.cn/rust-stative/rustup
+      curl https://sh.rustup.rs -ssf|SH
     
-2) After the installation is completed, re -open the terminal to make the environment variable take effect
+  2) After the installation is completed, re -open the terminal to make the environment variable take effect
+      
+  3) Enter Rustc -Version to confirm whether to install the Rust tool chain correctly. Note: You can only use Rustc's Nightly version
+    If Rustc has been installed and non -Nightly version, you can use the following command to install the Nightly version
+      Rustup Install Nightly
+      Rustup Default Nightly
     
-3) Enter Rustc -Version to confirm whether to install the Rust tool chain correctly. Note: You can only use Rustc's Nightly version
-If Rustc has been installed and non -Nightly version, you can use the following command to install the Nightly version
-Rustup Install Nightly
-Rustup Default Nightly
-    
- **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
- **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
- **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
+  **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
+  **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
+  **Intersection Intersection Intersection Note: Because some versions of Rustc's Nightly cannot use LLVM-Asm macro, it is recommended to use version 1.59.0!** 
 
-4) If the network speed is relatively slow, it is best to replace the software packaging mirror image address of the software package manager Cargo.
-Open or build a new ~/.cargo/config file, and modify the content:
-[Source.crates-IO]
-Registry ="https://github.com/rust-lang/crates.io-index" 
-replace-all = 'USSTC'
-[Source.ustc]
-Registry ="git://mirrors.ustc.edu.cn/crates.io-index" 
+  4) If the network speed is relatively slow, it is best to replace the software packaging mirror image address of the software package manager Cargo.
+    Open or build a new ~/.cargo/config file, and modify the content:
+    [Source.crates-IO]
+    Registry ="https://github.com/rust-lang/crates.io-index" 
+    replace-all = 'USSTC'
+    [Source.ustc]
+    Registry ="git://mirrors.ustc.edu.cn/crates.io-index" 
     
-5) Install RUST related software packages:
-Rustup Target Add Riscv64GC-UNKNOWN-NONE-In
-Cargo Install Cargo-Binutils-Vers = 0.3.3
-Rustup Component Add LLVM-Tools-Preview
-Rustup Component Add Rust-SRC
+  5) Install RUST related software packages:
+    Rustup Target Add Riscv64GC-UNKNOWN-NONE-In
+    Cargo Install Cargo-Binutils-Vers = 0.3.3
+    Rustup Component Add LLVM-Tools-Preview
+    Rustup Component Add Rust-SRC
 
 2. Install the QEMU simulator:
 
-1) The dependent package required for installation:
-SUDO APT Install AutoConf Automake AutoTools-Dev Curl Libmpc-DEV Libmpr-DEV Libgmp-DEV \ \ \
-GAWK Build-ESSENTIAL BISON FLEX TEXINFO GPERF LIBTOOL PATCHUTILS BC \
-zlib1g-dev libexpat-dev PKG-config libglib2.0-dev libpixman-dev git Tmux Python3-PIP
+  1) The dependent package required for installation:
+    SUDO APT Install AutoConf Automake AutoTools-Dev Curl Libmpc-DEV Libmpr-DEV Libgmp-DEV \ \ \
+    GAWK Build-ESSENTIAL BISON FLEX TEXINFO GPERF LIBTOOL PATCHUTILS BC \
+    zlib1g-dev libexpat-dev PKG-config libglib2.0-dev libpixman-dev git Tmux Python3-PIP
 
-2) Compile and install and configure RISC-V support:
-CD QEMU-5.0.0
-./configure-Target-List = RISCV64-SOFTMMU, RISCV64-LINUX-User
-Make -J $ (NPROC)
+  2) Compile and install and configure RISC-V support:
+    CD QEMU-5.0.0
+    ./configure-Target-List = RISCV64-SOFTMMU, RISCV64-LINUX-User
+    Make -J $ (NPROC)
 
-Note that the above dependency package may not be complete, such as on Ubuntu 18.04:
-When error: pkg-config binary 'pkg-config' not found, you can install the PKG-config package;
-When error: Glib-2.48 Gthread-2.0 is required to compile qemu, you can install the libglib2.0-dev package;
-When Error: pixman> = 0.21.8 not present, you can install libpixman-dev package
+  Note that the above dependency package may not be complete, such as on Ubuntu 18.04:
+  When error: pkg-config binary 'pkg-config' not found, you can install the PKG-config package;
+  When error: Glib-2.48 Gthread-2.0 is required to compile qemu, you can install the libglib2.0-dev package;
+  When Error: pixman> = 0.21.8 not present, you can install libpixman-dev package
 
 3. Edit ~/.bashrc file, add a few lines to the end of the file:
 
-export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0
-export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0/riscv64-sOFTMMMU
-export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0/riscv64-linux- userr
+  export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0
+  export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0/riscv64-sOFTMMMU
+  export path = $ Path: /home/shinbokuow/downloads/built/qemu-5.0.0/riscv64-linux- userr
 
-Then call the command: source ~/.bashrc to update the system path
+  Then call the command: source ~/.bashrc to update the system path
 
 4. In order to run the kernel in the K210 real machine, you need to install the Python -based serial communication library and simple serial port terminal:
 
-PIP3 Install pyserial
-SUDO APT Install Python3-Serial
-
-
+  PIP3 Install pyserial
+  SUDO APT Install Python3-Serial
 
 ## Instruction
 
 1. Run Toyos:
 
-Enter the Toyos directory in the terminal, enter the instruction Make Run running code
+  Enter the Toyos directory in the terminal, enter the instruction Make Run running code
 
 2. There are currently four parts::
 
-1) Bootloader: guide program, use Rustbin
+  1) Bootloader: guide program, use Rustbin
 
-2) Toyos: kernel part
-The kernel code within SRC, see the code in the code for details
+  2) Toyos: kernel part
+  The kernel code within SRC, see the code in the code for details
 
-3) User: User testing program, temporarily use this file to test the program before the file system is implemented
-The related code in SRC, including link files and related test programs, is a test program in SRC/BIN
+  3) User: User testing program, temporarily use this file to test the program before the file system is implemented
+  The related code in SRC, including link files and related test programs, is a test program in SRC/BIN
 
-4) Tools: including file system burning and other tools
+  4) Tools: including file system burning and other tools
 
 3. Open interface to declare or annotation in the MOD.RS file in the kernel folders
 
@@ -201,7 +199,8 @@ It is to manage all the processes currently in the process queue with a certain 
 Used to save the control block information of the current execution process, and the task of control flow. Its main function is to obtain the information of the current execution process and switch different processes according to the scheduling result. Its core effect can be used to obtain the processing process being performed by the processor, and when the task is switched, it can also switch between the process through the context of the current process control flow. Therefore, it will be closely related to the process scheduling module. When the process is scheduled, it means that the process should be switched, so the distribution of the process controller and the switching of different contexts.
 
 ## Memory management
-Memory management mainly includes three parts: kernel space management, user space management, and page address conversion. The management of memory space is completed in the kernel virtual address space. The kernel space is managed by mapping the physical address space by pages such as pages as the unit, and the physical address space is managed. The user space and kernel space are all completed in the kernel space in the distribution of physical memory and the conversion of the page table address. At the same time, in the kernel space, it is also responsible for managing the page frame allocation and recycling of the user and the kernel on the pages of the physical memory, the page table mapping of the virtual address to the physical address, the distribution of the user stack, the file and device mapping, and the dynamic memory allocation during program operation.
+Memory management mainly includes three parts: kernel space management, user space management, and page address conversion. The management of memory space is completed in the kernel virtual address space. The kernel space is managed by mapping the physical address space by pages such as pages as the unit, and the physical address space is managed. The user space and kernel space are all completed in the kernel space in the distribution of physical memory and the conversion of the page table address. At the same time, in the kernel space, it is also responsible for managing the page frame allocation and recycling of the user and the kernel on the pages of the physical memory, the page table mapping of the virtual address to the physical address, the distribution of the user stack, the file and device mapping, and the dynamic memory allocation during program operation. 
+
 The layout of the current kernel address space and the user address space and the mapping relationship between them and the physical address are shown in the figure below:
 
  ![](pic/space%20layout1.png) 
